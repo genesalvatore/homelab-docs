@@ -45,7 +45,12 @@
   /* ================= Compute and paint ================= */
   function compute() {
     const sc = S.scenario;
-    S.result = E.compute({ faults: sc ? sc.faults : [], detect: S.detect, failover: S.failover });
+    const liveFaults = Array.isArray(S.liveFaults) ? S.liveFaults : [];
+    S.result = E.compute({
+      faults: sc ? sc.faults : liveFaults,
+      detect: S.detect,
+      failover: sc ? S.failover : liveFaults.length > 0
+    });
     paint();
   }
 
@@ -541,7 +546,7 @@
     if (done) session.set("demo", "done");
   }
   function showInvite() {
-    if (S.scenario || session.get("demo")) return;
+    if (HomelabDocs.liveTelemetryActive || S.scenario || session.get("demo")) return;
     if (S.panel) { setTimeout(showInvite, 6000); return; }   // reading something: try again later
     const pool = M.scenarios.filter(s => s.teaser);
     inviteSc = pool[Math.floor(Math.random() * pool.length)];
@@ -564,6 +569,10 @@
   setTimeout(showInvite, 12000);
 
   /* ================= Start ================= */
+  HomelabDocs.setLiveFaults = function (faultIds) {
+    S.liveFaults = Array.isArray(faultIds) ? faultIds : [];
+    if (!S.scenario) compute();
+  };
   document.querySelectorAll("[data-mode-btn]").forEach(b => b.setAttribute("aria-checked", String(b.getAttribute("data-mode-btn") === S.mode)));
   compute();
   updateLayerState();
