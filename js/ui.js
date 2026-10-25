@@ -13,7 +13,7 @@ HomelabDocs.ui = (function () {
 
   const KIND = {
     cloud: "Public network", ext: "External service", carrier: "Internet access", wansw: "WAN switch",
-    firewall: "Firewall / router", switch: "VLAN switch", access: "Clients", server: "Proxmox VE node",
+    firewall: "Traefik v3 Edge Ingress", switch: "WireGuard mesh hub", access: "Clients", server: "Sovereign Cloud node",
     jbod: "Storage", nas: "Storage", grid: "Power", generator: "Power", ups: "Power", pdu: "Power"
   };
 
@@ -54,8 +54,8 @@ HomelabDocs.ui = (function () {
     if (s === "off") return "No power.";
     switch (n.kind) {
       case "firewall":
-        return s === "master" ? "CARP MASTER: holds the virtual addresses and forwards all traffic."
-          : "CARP BACKUP: connected, synchronised and ready to take over." + (st.flags.demoted ? " One interface has lost link, so the node has given up priority." : "");
+        return s === "master" ? "ACTIVE MASTER: holds the virtual addresses and forwards all traffic."
+          : "HOT-STANDBY BACKUP: connected, synchronised and ready to take over." + (st.flags.demoted ? " One interface has lost link, so the node has given up priority." : "");
       case "carrier":
         return s === "active" ? "Carrying traffic in the load-balancing group." : s === "standby" ? "Available in the gateway group." : "Not reachable from the MASTER firewall.";
       case "server":
@@ -106,7 +106,7 @@ HomelabDocs.ui = (function () {
   const stateChip = c => c ? '<span class="state-chip ' + c[1] + '">' + esc(c[0]) + "</span>" : "";
 
   const SVC_STATUS = {
-    running: ["running", "ok"], recovered: ["running on PVE03", "rec"], ready: ["restarting on PVE03", "ready"],
+    running: ["running", "ok"], recovered: ["running on APPS2", "rec"], ready: ["promoting on APPS2", "ready"],
     restorable: ["restorable from backup", "idle"], degraded: ["degraded", "warn"], down: ["stopped", "bad"]
   };
 
@@ -122,7 +122,7 @@ HomelabDocs.ui = (function () {
     };
     let h = '<section class="p-sec"><h3>Workloads</h3>';
     if (list.length) h += '<ul class="svc-list">' + list.map(item).join("") + "</ul>";
-    if (moved.length) h += '<div class="svc-group">Taken over from PVE01</div><ul class="svc-list">' + moved.map(item).join("") + "</ul>";
+    if (moved.length) h += '<div class="svc-group">Promoted from APPS1</div><ul class="svc-list">' + moved.map(item).join("") + "</ul>";
     return h + "</section>";
   }
 
@@ -182,7 +182,7 @@ HomelabDocs.ui = (function () {
     let h = '<header class="p-head"><div class="p-kind">About this map</div><h2>Design choices</h2><div class="p-sub">' + esc(T.meta.disclaimer) + "</div></header>";
     h += '<section class="p-sec"><h3>How to read it</h3><ul>' +
       "<li>Blue lines carry data, amber lines carry power.</li>" +
-      "<li>Moving pulses show logical traffic paths. They are illustrative, not live telemetry.</li>" +
+      "<li>Connected to live GreenTree Command Center telemetry (/api/command/overview) with 10-second real-time health Moving pulses show logical traffic paths. They are illustrative, not live telemetry. latency polling.</li>" +
       "<li>Use <strong>Simulate</strong> to see how the infrastructure reacts when a component fails.</li></ul></section>";
     h += M.decisions.map((d, i) => '<section class="p-sec decision"><h3><span class="num">' + String(i + 1).padStart(2, "0") + "</span>" + esc(d.h) + "</h3><p>" + esc(d.p) + "</p></section>").join("");
     return h;

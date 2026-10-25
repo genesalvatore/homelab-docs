@@ -60,7 +60,7 @@ HomelabDocs.renderServer = function (g, n, h) {
     text(pg, px + 16, cy0 + 33, "NIC" + i, "nic-text", { "text-anchor": "middle" });
     nics[l.id] = pg;
   });
-  text(g, -L - 92, cy0 + 11, "LACP bond", "pool-label");
+  text(g, -L - 92, cy0 + 11, "WireGuard mesh", "pool-label");
 
   /* ---- Workloads ---- */
   const services = M.services.filter(s => s.host === n.id);
@@ -110,7 +110,7 @@ HomelabDocs.renderServer = function (g, n, h) {
     const ay = wy + 8;
     text(g, L + 14, wy, "RESERVE CAPACITY", "section-label");
     el("rect", { x: L + 14, y: ay, width: W - 28, height: (n.h / 2 - 12) - ay, rx: 6, class: "emergency-area" }, g);
-    text(g, L + 24, ay + 16, "Takes over selected workloads from PVE01", "section-label emergency");
+    text(g, L + 24, ay + 16, "Takes over replicated workloads from APPS1 (0.0s HA)", "section-label emergency");
     replicas.forEach((s, i) => {
       const cx = L + 24 + (i % COLS) * (CW + 6), cy = ay + 26 + Math.floor(i / COLS) * (CH + 5);
       HomelabDocs.svcEls[s.id] = HomelabDocs.svcEls[s.id] || {};
@@ -121,7 +121,9 @@ HomelabDocs.renderServer = function (g, n, h) {
   // recovery colour legend on nodes whose workloads can move
   if (services.some(s => s.recovery === "replica")) {
     const ly = n.h / 2 - 12;
-    const items = [["replica", "replicated → PVE03"], ["backup", "restore from backup"], ["none", "paused"]];
+    const recNode = (T.nodes || []).find(x => x.id === (M.cluster && M.cluster.recoveryHost));
+    const recLabel = recNode ? recNode.label : "APPS2";
+    const items = [["replica", "replicated → " + recLabel], ["backup", "restore from backup"], ["none", "paused"]];
     let lx = L + 14;
     text(g, lx, ly, "IF THIS NODE FAILS", "section-label");
     lx += 112;
