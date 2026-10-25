@@ -33,7 +33,7 @@
   function updateNodeSubtitle(nodeId, textStr) {
     const g = document.querySelector('#map g.node[data-id="' + nodeId + '"]');
     if (!g) return;
-    const sub = g.querySelector("text.sub");
+    const sub = g.querySelector("text.node-sub") || g.querySelector("text.sub");
     if (sub && textStr) sub.textContent = textStr;
     if (window.HomelabDocs && window.HomelabDocs.engine && window.HomelabDocs.engine.nodeById[nodeId]) {
       window.HomelabDocs.engine.nodeById[nodeId].sub = textStr;

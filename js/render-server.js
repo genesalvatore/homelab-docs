@@ -121,7 +121,7 @@ HomelabDocs.renderServer = function (g, n, h) {
   // recovery colour legend on nodes whose workloads can move
   if (services.some(s => s.recovery === "replica")) {
     const ly = n.h / 2 - 12;
-    const recNode = (T.nodes || []).find(x => x.id === (M.cluster && M.cluster.recoveryHost));
+    const recNode = E.nodeById[M.cluster && M.cluster.recoveryHost];
     const recLabel = recNode ? recNode.label : "APPS2";
     const items = [["replica", "replicated → " + recLabel], ["backup", "restore from backup"], ["none", "paused"]];
     let lx = L + 14;
