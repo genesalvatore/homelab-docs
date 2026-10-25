@@ -36,9 +36,12 @@
   const fwPorts = {};
   T.nodes.filter(n => n.kind === "firewall").forEach(n => {
     const wans = E.adj[n.id].filter(l => l.type === "wan").sort((a, b) => E.nodeById[E.other(a, n.id)].cx - E.nodeById[E.other(b, n.id)].cx);
+    const lanId = (E.adj[n.id].find(l => l.type === "lan") || {}).id;
+    const syncId = (E.adj[n.id].find(l => l.type === "ha") || {}).id;
     fwPorts[n.id] = {
       WAN1: wans[0] && wans[0].id, WAN2: wans[1] && wans[1].id,
-      LAN: (E.adj[n.id].find(l => l.type === "lan") || {}).id, SYNC: (E.adj[n.id].find(l => l.type === "ha") || {}).id
+      DNS1: wans[0] && wans[0].id, DNS2: wans[1] && wans[1].id,
+      LAN: lanId, WG0: lanId, SYNC: syncId
     };
   });
 
